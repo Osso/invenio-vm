@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import json
+from datetime import datetime, timedelta
+
+
+def sync(module):
+    last_sync_string = None
+    for line in open('/var/log/emerge.log'):
+        if 'Sync completed' in line:
+            last_sync_string = line.split(' ')[0].strip(':')
+
+    needs_sync = True
+    if last_sync_string:
+        last_sync_date = datetime.fromtimestamp(int(last_sync_string))
+        if last_sync_date > datetime.now() - timedelta(days=7):
+            module.exit_json(changed=False, last_sync=str(last_sync_date))
+            needs_sync = False
+
+    if needs_sync:
+        subprocess.call('emerge --sync', shell=True)
+        module.exit_json(changed=True)
+
+
+def main():
+    module = AnsibleModule(argument_spec={
+        'sync': dict(choices=['yes', 'no']),
+    })
+    if module.params['sync'] == 'yes':
+        sync(module)
+
+
+# import module snippets
+from ansible.module_utils.basic import *
+
+main()

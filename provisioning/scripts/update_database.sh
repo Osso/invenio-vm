@@ -1,0 +1,1 @@
+mysqldump globalcomix > /vagrant/provisioning/files/gc.sql

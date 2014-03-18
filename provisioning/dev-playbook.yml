@@ -1,0 +1,53 @@
+- hosts: all
+  sudo: true
+  vars:
+    invenio_prefix: /opt/invenio
+    invenio_srcdir: /home/invenio/invenio
+  roles:
+    - gentoo
+    - database
+    - webserver
+  handlers:
+    - name: Compile conf
+      command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
+    - name: Create tables
+      command: "{{invenio_prefix}}/bin/inveniocfg --create-tables creates=/var/lib/mysql/invenio/xtrJOB.frm"
+      sudo: false
+      notify: Create demo site
+    - name: Create demo site
+      command: "{{invenio_prefix}}/bin/inveniocfg --create-demo-site"
+      sudo: false
+      notify: Load demo records
+    - name: Load demo records
+      command: "{{invenio_prefix}}/bin/inveniocfg --load-demo-records"
+      sudo: false
+
+  tasks:
+    - name: Setup mount point for nfs
+      file: dest=/home/invenio state=directory
+    - name: Setup invenio path in bashrc
+      copy: src=files/bashrc dest=/home/vagrant/.bashrc
+    - name: Setup invenio path in bashprofile
+      copy: src=files/bash_profile dest=/home/vagrant/.bash_profile
+    # mysql-python is required for setting the mysql_user ansible module
+    - name: Install mysql-python module
+      portage: package=dev-python/mysql-python state=present
+    - name: Set root password to "none"
+      mysql_user: name=root password=none check_implicit_admin=yes
+    - name: Create invenio database
+      mysql_db: name=invenio state=present
+    - name: Copy invenio conf
+      copy: src=files/invenio-local.conf dest=/opt/invenio/etc/invenio-local.conf
+      sudo: false
+      notify: Compile conf
+      sudo: false
+    - name: Create invenio user for database
+      mysql_user: name=invenio password="my123p$ss" priv="invenio.*:ALL"
+      notify: Create tables
+    - name: Compile conf
+      command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
+    - name: Load bibfield conf
+      command: "{{invenio_prefix}}/bin/inveniocfg --load-bibfield-conf creates=/opt/invenio/lib/python/invenio/bibfield_config.py"
+    - name: Webcoll if needed
+      command: "{{invenio_prefix}}/bin/webcoll -f -u admin creates={{invenio_prefix}}/var/cache/collections/Atlantis Institute of Fictive Science-ln=en.html"
+      sudo: false
