@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 
 
-def sync(module):
+def sync_portage(module):
     last_sync_string = None
     for line in open('/var/log/emerge.log'):
         if 'Sync completed' in line:
@@ -16,12 +16,17 @@ def sync(module):
     if last_sync_string:
         last_sync_date = datetime.fromtimestamp(int(last_sync_string))
         if last_sync_date > datetime.now() - timedelta(days=7):
-            module.exit_json(changed=False, last_sync=str(last_sync_date))
             needs_sync = False
 
     if needs_sync:
-        subprocess.call('emerge --sync', shell=True)
-        module.exit_json(changed=True)
+        rc, out, err = module.run_command(['emerge', '--sync'], executable='emerge')
+        module.exit_json(changed=True,
+                         stdout=out.rstrip("\r\n"),
+                         stderr=err.rstrip("\r\n"),
+                         rc=rc)
+    else:
+        module.exit_json(changed=False, last_sync=str(last_sync_date))
+
 
 
 def main():
@@ -29,7 +34,8 @@ def main():
         'sync': dict(choices=['yes', 'no']),
     })
     if module.params['sync'] == 'yes':
-        sync(module)
+        sync_portage(module)
+
 
 
 # import module snippets

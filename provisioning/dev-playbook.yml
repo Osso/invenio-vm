@@ -1,26 +1,55 @@
 - hosts: all
   sudo: true
+
   vars:
     invenio_prefix: /opt/invenio
     invenio_srcdir: /home/invenio/invenio
+    inspire_srcdir: /home/invenio/inspire
+    bibtask_user: admin
+    files_reinstall: false
+    db_reinstall: false
+  # environment:
+  #   CFG_INVENIO_PREFIX: "{{ invenio_prefix }}"
+  #   CFG_INVENIO_SRCDIR: "{{ invenio_srcdir }}"
+  #   CFG_INSPIRE_SRCDIR: "{{ inspire_srcdir }}"
+  #   CFG_INSPIRE_BIBTASK_USER: admin
+  #   CFG_INVENIO_USER: vagrant
+  #   CFG_INVENIO_HOSTNAME: localhost:4000
+
   roles:
     - gentoo
     - database
     - webserver
+
   handlers:
     - name: Compile conf
       command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
-    - name: Create tables
-      command: "{{invenio_prefix}}/bin/inveniocfg --create-tables creates=/var/lib/mysql/invenio/xtrJOB.frm"
-      sudo: false
-      notify: Create demo site
     - name: Create demo site
       command: "{{invenio_prefix}}/bin/inveniocfg --create-demo-site"
       sudo: false
+      notify: Install inspire db changes
+    - name: Install inspire db changes
+      command: "chdir={{inspire_srcdir}} make install-dbchanges"
+      environment:
+        CFG_INSPIRE_BIBTASK_USER: "{{ bibtask_user }}"
+      sudo: false
+      notify: Truncate schTASK
+    - name: Truncate schTASK
+      shell: "echo TRUNCATE schTASK | {{invenio_prefix}}/bin/dbexec"
+      sudo: false
       notify: Load demo records
     - name: Load demo records
-      command: "{{invenio_prefix}}/bin/inveniocfg --load-demo-records"
+      command: "chdir={{inspire_srcdir}} make load-demo-records"
+      environment:
+        CFG_INSPIRE_BIBTASK_USER: "{{ bibtask_user }}"
       sudo: false
+      notify: Run bibtasks
+    - name: Run bibtasks
+      script: files/inspire-create-database.py
+      sudo: false
+      environment:
+        CFG_INVENIO_PREFIX: "{{ invenio_prefix }}"
+        CFG_INSPIRE_BIBTASK_USER: "{{ bibtask_user }}"
 
   tasks:
     - name: Setup mount point for nfs
@@ -34,6 +63,9 @@
       portage: package=dev-python/mysql-python state=present
     - name: Set root password to "none"
       mysql_user: name=root password=none check_implicit_admin=yes
+    - name: Erase invenio database
+      mysql_db: name=invenio state=absent
+      when: db_reinstall
     - name: Create invenio database
       mysql_db: name=invenio state=present
     - name: Copy invenio conf
@@ -43,11 +75,16 @@
       sudo: false
     - name: Create invenio user for database
       mysql_user: name=invenio password="my123p$ss" priv="invenio.*:ALL"
-      notify: Create tables
+    - name: Compile conf
+      command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
+    - name: Create tables
+      command: "{{invenio_prefix}}/bin/inveniocfg --create-tables creates=/var/lib/mysql/invenio/xtrJOB.frm"
+      # sudo: false
+      notify: Create demo site
     - name: Compile conf
       command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
     - name: Load bibfield conf
       command: "{{invenio_prefix}}/bin/inveniocfg --load-bibfield-conf creates=/opt/invenio/lib/python/invenio/bibfield_config.py"
     - name: Webcoll if needed
-      command: "{{invenio_prefix}}/bin/webcoll -f -u admin creates={{invenio_prefix}}/var/cache/collections/Atlantis Institute of Fictive Science-ln=en.html"
+      command: "{{invenio_prefix}}/bin/webcoll -f -u admin creates={{invenio_prefix}}/var/cache/collections/HEP-ln=en.html"
       sudo: false
