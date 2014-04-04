@@ -1,2 +1,2 @@
 export PATH="$PATH:/opt/invenio/bin"
-alias serve="serve -b 0.0.0.0"
+alias serve="inveniomanage runserver -t 0.0.0.0"
