@@ -8,6 +8,9 @@
 
 - name: Install eix
   portage: package=eix state=present
+- name: Install nano
+  portage: package=app-editors/nano state=present
+
 # Make sure portage is up to date
 - name: Update portage tree (once a week)
   # script: scripts/emerge-sync.py
@@ -17,8 +20,12 @@
   portage: package=portage update=yes
 
 # Config files
+- name: Remove portage/package.use/git
+  file: dest=/etc/portage/package.use/git state=absent
 - name: Install portage/package.use/gentoo
   copy: src=gentoo.use dest=/etc/portage/package.use/gentoo
+- name: Install portage/package.accept_keywords/pip
+  copy: src=pip.accept_keywords dest=/etc/portage/package.accept_keywords/pip
 - name: Install /etc/portage/make.conf
   copy: src=make.conf dest=/etc/portage/make.conf
 
@@ -27,8 +34,8 @@
   portage: package=gentoo-sources update=yes
 - name: Copy kernel configuration
   command: cp /usr/src/linux-3.10.7-gentoo-r1/.config /usr/src/linux/.config creates=/usr/src/linux/.config
-- name: Install current kernel sources
-  portage: package=gentoo-sources:3.10.7-r1 state=present
+# - name: Install current kernel sources
+#   portage: package=gentoo-sources:3.10.7-r1 state=present
 - name: Prepare modules for building virtualbox-guest-additions
   command: chdir=/usr/src/linux make modules_prepare creates=/usr/src/linux/arch/x86/tools/relocs_64.o
 
