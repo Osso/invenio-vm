@@ -34,27 +34,39 @@
   when: files_reinstall
 - name: Create invenio instance directory
   file: "dest={{ invenio_prefix }}/var/invenio.base-instance state=absent"
+  when: files_reinstall
 - name: Create tmp shared directory
   file: "dest={{ invenio_prefix }}/var/tmp-shared state=absent"
+  when: files_reinstall
 - name: Create tmp directory
   file: "dest={{ invenio_prefix }}/var/tmp state=absent"
+  when: files_reinstall
 - name: Create log directory
   file: "dest={{ invenio_prefix }}/var/log state=absent"
+  when: files_reinstall
 - name: Create run directory
   file: "dest={{ invenio_prefix }}/var/run state=absent"
+  when: files_reinstall
 
 - name: Install pypi requirements
-  pip: "chdir={{invenio_srcdir}} requirements='' extra_args='-e . --allow-all-external --process-dependency-links' state=present"
+  pip: "chdir={{ invenio_srcdir }} requirements='' extra_args='-e . --allow-all-external --process-dependency-links' state=present"
 - name: Install pypi requirements
-  pip: "chdir={{demosite_srcdir}} requirements='' extra_args='-e . --allow-all-external --process-dependency-links' state=present"
+  pip: "chdir={{ demosite_srcdir }} requirements='' extra_args='-e . --allow-all-external --process-dependency-links' state=present"
 
 - name: Pylabel
-  command: "chdir={{invenio_srcdir}} pybabel compile -fd invenio/base/translations/"
+  command: "chdir={{ invenio_srcdir }} pybabel compile -fd invenio/base/translations/"
 
 - name: Install bower
   npm: name=bower global=yes
 - name: Install grunt
   npm: name=grunt-cli global=yes
+- name: Npm Install
+  npm: "path={{ invenio_srcdir }}"
+- name: bower Install
+  command: "chdir={{ invenio_srcdir }} bower install"
+- name: Run grunt
+  command: "chdir={{ invenio_srcdir }} grunt"
+  sudo: false
 
 - name: Create invenio instance directory
   file: "dest={{ invenio_prefix }}/var/invenio.base-instance owner={{ invenio_user }} group={{ invenio_group }} state=directory"
