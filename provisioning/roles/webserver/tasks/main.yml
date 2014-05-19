@@ -50,7 +50,7 @@
   command: chdir={{invenio_srcdir}} make creates={{invenio_srcdir}}/modules/miscutil/lib/build/temp.linux-x86_64-2.7/intbitset.o
   sudo: false
 - name: Create invenio lib dir
-  file: path={{invenio_prefix}}/lib/python/invenio state=directory
+  file: path={{invenio_prefix}}/lib/python/invenio owner=vagrant group=vagrant state=directory
 - name: Create invenio symlinks
   file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/local/lib/python2.7/site-packages/invenio state=link
   sudo: true

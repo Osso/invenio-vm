@@ -4,8 +4,8 @@
   locale_gen: name=en_US.UTF-8 state=present
 
 # Make sure portage is up to date
-- name: Update packages list
-  apt: update_cache=yes
+# - name: Update packages list
+#   apt: update_cache=yes
 - name: Update packages
   apt: upgrade=dist
 
