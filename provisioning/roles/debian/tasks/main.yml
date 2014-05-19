@@ -1,7 +1,7 @@
 # - name: Create locale configuration file
 #   command: touch /var/lib/locales/supported.d/local creates=/var/lib/locales/supported.d/local
-- name: Locale generation
-  locale_gen: name=en_US.UTF-8 state=present
+#- name: Locale generation
+#  locale_gen: name=en_US.UTF-8 state=present
 
 # Make sure portage is up to date
 # - name: Update packages list
