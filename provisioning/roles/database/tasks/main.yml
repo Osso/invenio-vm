@@ -1,15 +1,10 @@
-- name: Install portage/package.accept_keywords/mariadb
-  copy: src=mariadb.accept_keywords dest=/etc/portage/package.accept_keywords/mariadb
-- name: Install portage/package.use/database
-  copy: src=database.use dest=/etc/portage/package.use/database
 - name: Install mariadb
-  portage: package=mariadb state=present
-
+  apt: name=mariadb-server state=present
+- name: Install mariadb lib
+  apt: name=libmariadbclient-dev state=present
 - name: Install my.cnf for vagrant (mariadb config)
   copy: src=my.cnf dest=/home/vagrant/.my.cnf force=no
 - name: Install my.cnf for root (mariadb config)
   copy: src=my.cnf dest=/root/.my.cnf force=no
-- name: Config Mariadb
-  command: emerge --config mariadb creates=/var/lib/mysql/test
 - name: Start/Enable mariadb
   service: name=mysql enabled=yes state=started

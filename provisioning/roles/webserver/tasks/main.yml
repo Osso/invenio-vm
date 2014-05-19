@@ -1,10 +1,25 @@
-- name: Install portage/package.use/webserver
-  copy: src=webserver.use dest=/etc/portage/package.use/webserver
-
 - name: Install pip
-  portage: package=dev-python/pip state=present
+  apt: name=python-pip state=present
 - name: Install redis
-  portage: package=dev-db/redis state=present
+  apt: name=redis-server state=present
+- name: Install python dev headers
+  apt: name=python-dev
+- name: Install ssl dev headers
+  apt: name=libssl-dev
+- name: Install libxml2 headers
+  apt: name=libxml2-dev
+- name: Install libxslt headers
+  apt: name=libxslt-dev
+- name: Install gnuplot
+  apt: name=gnuplot
+- name: Install clisp
+  apt: name=clisp
+- name: Install automake
+  apt: name=automake
+- name: Install pstotext
+  apt: name=pstotext
+- name: Install gettext
+  apt: name=gettext
 
 # Install packages
 - name: Install pypi requirements
@@ -16,7 +31,7 @@
 - name: Install nose tests
   pip: name=nose state=present
 - name: Start/Enable redis
-  service: name=redis enabled=yes state=started
+  service: name=redis-server enabled=yes state=started
 
 
 - name: Remove installed invenio
@@ -24,6 +39,7 @@
   when: files_reinstall
 - name: Make distclean
   command: chdir={{invenio_srcdir}} make distclean removes={{invenio_srcdir}}/Makefile
+  ignore_errors: yes
   when: files_reinstall
 - name: Create /opt/invenio
   file: path={{invenio_prefix}} owner=vagrant group=vagrant state=directory
@@ -33,11 +49,16 @@
 - name: Make invenio
   command: chdir={{invenio_srcdir}} make creates={{invenio_srcdir}}/modules/miscutil/lib/build/temp.linux-x86_64-2.7/intbitset.o
   sudo: false
+- name: Create invenio lib dir
+  file: path={{invenio_prefix}}/lib/python/invenio state=directory
+- name: Create invenio symlinks
+  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/local/lib/python2.7/site-packages/invenio state=link
+  sudo: true
+- name: Create invenio symlinks
+  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib/python2.7/dist-packages/invenio state=link
+  sudo: true
 - name: Install invenio
   command: chdir={{invenio_srcdir}} make install creates={{invenio_prefix}}/lib/python/invenio/search_engine.py
-  sudo: false
-- name: Create invenio symlinks
-  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib64/python2.7/site-packages/invenio state=link
   sudo: false
 - name: Install inspire overlay
   command: chdir={{inspire_srcdir}} make install creates={{invenio_prefix}}/lib/python/invenio/bibsched_tasklets/bst_affiliations.py

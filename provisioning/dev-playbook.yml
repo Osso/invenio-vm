@@ -17,7 +17,7 @@
   #   CFG_INVENIO_HOSTNAME: localhost:4000
 
   roles:
-    - gentoo
+    - debian
     - database
     - webserver
 
@@ -58,9 +58,9 @@
       copy: src=files/bashrc dest=/home/vagrant/.bashrc
     - name: Setup invenio path in bashprofile
       copy: src=files/bash_profile dest=/home/vagrant/.bash_profile
-    # mysql-python is required for setting the mysql_user ansible module
-    - name: Install mysql-python module
-      portage: package=dev-python/mysql-python state=present
+    # # mysql-python is required for setting the mysql_user ansible module
+    # - name: Install mysql-python module
+    #   portage: package=dev-python/mysql-python state=present
     - name: Set root password to "none"
       mysql_user: name=root password=none check_implicit_admin=yes
     - name: Erase invenio database
