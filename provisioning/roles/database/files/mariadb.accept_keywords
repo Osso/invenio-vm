@@ -3,4 +3,4 @@
 =virtual/mysql-5.5 ~amd64
 # required by virtual/mysql-5.5
 # required by dev-perl/DBD-mysql-4.20.0
-=dev-db/mariadb-5.5.32 ~amd64
+<dev-db/mariadb-5.6 ~amd64
