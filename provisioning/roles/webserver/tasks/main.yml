@@ -25,9 +25,15 @@
 - name: Make invenio
   command: chdir={{invenio_srcdir}} make creates={{invenio_srcdir}}/modules/miscutil/lib/build/temp.linux-x86_64-2.7/intbitset.o
   sudo: false
-- name: Install invenio
-  command: chdir={{invenio_srcdir}} make install
-  sudo: false
+- name: Create invenio lib dir
+  file: path={{invenio_prefix}}/lib owner=vagrant group=vagrant state=directory
+- name: Create invenio lib dir
+  file: path={{invenio_prefix}}/lib/python owner=vagrant group=vagrant state=directory
+- name: Create invenio lib dir
+  file: path={{invenio_prefix}}/lib/python/invenio owner=vagrant group=vagrant state=directory
 - name: Create invenio symlinks
   file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib64/python2.7/site-packages/invenio state=link
+  sudo: true
+- name: Install invenio
+  command: chdir={{invenio_srcdir}} make install
   sudo: false
