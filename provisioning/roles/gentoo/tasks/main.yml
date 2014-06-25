@@ -27,6 +27,10 @@
   portage: package=gentoo-sources update=yes
 - name: Copy kernel configuration
   command: cp /usr/src/linux-3.10.7-gentoo-r1/.config /usr/src/linux/.config creates=/usr/src/linux/.config
+- name: Remove kernel sources symlink
+  file: dest=/usr/src/linux state=absent
+- name: Create Kernel sources symlink
+  file: src=/usr/src/linux-3.10.7-gentoo-r1 dest=/usr/src/linux state=link
 - name: Install current kernel sources
   portage: package=gentoo-sources:3.10.7-r1 state=present
 - name: Prepare modules for building virtualbox-guest-additions
