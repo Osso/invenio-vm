@@ -20,7 +20,7 @@
 - name: Create /opt/invenio
   file: path={{invenio_prefix}} owner=vagrant group=vagrant state=directory
 - name: Run autotools
-  script: scripts/autoremake.sh # creates={{invenio_srcdir}}/configure
+  script: scripts/autoremake.sh creates={{invenio_srcdir}}/Makefile
   sudo: false
 - name: Make invenio
   command: chdir={{invenio_srcdir}} make creates={{invenio_srcdir}}/modules/miscutil/lib/build/temp.linux-x86_64-2.7/intbitset.o

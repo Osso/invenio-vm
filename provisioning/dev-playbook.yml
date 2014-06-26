@@ -3,6 +3,10 @@
   vars:
     invenio_prefix: /opt/invenio
     invenio_srcdir: /home/invenio/invenio
+    bibtask_user: admin
+    files_reinstall: false
+    db_reinstall: true
+
   roles:
     - gentoo
     - database
@@ -34,6 +38,8 @@
       portage: package=dev-python/mysql-python state=present
     - name: Set root password to "none"
       mysql_user: name=root password=none check_implicit_admin=yes
+    - name: Create invenio database
+      mysql_db: name=invenio state=present
     - name: Create invenio database
       mysql_db: name=invenio state=present
     - name: Copy invenio conf
