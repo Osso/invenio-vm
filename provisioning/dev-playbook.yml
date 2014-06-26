@@ -14,10 +14,6 @@
   handlers:
     - name: Compile conf
       command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
-    - name: Create tables
-      command: "{{invenio_prefix}}/bin/inveniocfg --create-tables creates=/var/lib/mysql/invenio/xtrJOB.frm"
-      sudo: false
-      notify: Create demo site
     - name: Create demo site
       command: "{{invenio_prefix}}/bin/inveniocfg --create-demo-site"
       sudo: false
@@ -49,9 +45,12 @@
       sudo: false
     - name: Create invenio user for database
       mysql_user: name=invenio password="my123p$ss" priv="invenio.*:ALL"
-      notify: Create tables
     - name: Compile conf
       command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
+    - name: Create tables
+      command: "{{invenio_prefix}}/bin/inveniocfg --create-tables creates=/var/lib/mysql/invenio/xtrJOB.frm"
+      # sudo: false
+      notify: Create demo site
     - name: Load bibfield conf
       command: "{{invenio_prefix}}/bin/inveniocfg --load-bibfield-conf creates=/opt/invenio/lib/python/invenio/bibfield_config.py"
     - name: Webcoll if needed
