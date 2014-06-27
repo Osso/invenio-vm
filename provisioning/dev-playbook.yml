@@ -11,6 +11,7 @@
     - gentoo
     - database
     - webserver
+
   handlers:
     - name: Compile conf
       command: "{{invenio_prefix}}/bin/inveniocfg --update-all"
@@ -34,8 +35,9 @@
       portage: package=dev-python/mysql-python state=present
     - name: Set root password to "none"
       mysql_user: name=root password=none check_implicit_admin=yes
-    - name: Create invenio database
-      mysql_db: name=invenio state=present
+    - name: Erase invenio database
+      mysql_db: name=invenio state=absent
+      when: db_reinstall
     - name: Create invenio database
       mysql_db: name=invenio state=present
     - name: Copy invenio conf

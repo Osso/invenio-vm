@@ -1,2 +1,12 @@
 export PATH="$PATH:/opt/invenio/bin"
+
+# Invenio
+export CFG_INVENIO_USER="vagrant"
+export CFG_INSPIRE_BIBTASK_USER="admin"
+# export CFG_INVENIO_HOSTNAME="localhost:4000"
+# export CFG_OPENOFFICE_TMPDIR="/opt/invenio/var/tmp/ooffice-tmp-files"
+export CFG_INVENIO_PREFIX="/opt/invenio"
+export CFG_INVENIO_SRCDIR="/home/invenio/invenio"
+export CFG_INSPIRE_SRCDIR="/home/invenio/inspire"
+
 alias serve="serve -b 0.0.0.0"

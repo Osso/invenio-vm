@@ -5,18 +5,28 @@
   portage: package=dev-python/pip state=present
 - name: Install redis
   portage: package=dev-db/redis state=present
+- name: Install redis
+  portage: package=app-text/pstotext state=present
 
 # Install packages
 - name: Install pypi requirements
   pip: chdir={{invenio_srcdir}} requirements=requirements.txt state=present
+- name: Install plumbum
+  pip: name=plumbum state=present
 - name: Install invenio devserver
   pip: name=invenio-devserver state=present
+- name: Install nose tests
+  pip: name=nose state=present
 - name: Start/Enable redis
   service: name=redis enabled=yes state=started
 
-
 - name: Remove installed invenio
   file: path={{invenio_prefix}} state=absent
+  when: files_reinstall
+- name: Make distclean
+  command: chdir={{invenio_srcdir}} make distclean removes={{invenio_srcdir}}/Makefile
+  ignore_errors: yes
+  when: files_reinstall
 - name: Create /opt/invenio
   file: path={{invenio_prefix}} owner=vagrant group=vagrant state=directory
 - name: Run autotools
@@ -35,5 +45,8 @@
   file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib64/python2.7/site-packages/invenio state=link
   sudo: true
 - name: Install invenio
-  command: chdir={{invenio_srcdir}} make install
+  command: chdir={{invenio_srcdir}} make install creates={{invenio_prefix}}/lib/python/invenio/search_engine.py
+  sudo: false
+- name: Install jquery plugins
+  command: chdir={{invenio_srcdir}} make install-jquery-plugins creates={{invenio_prefix}}/var/www/js/jquery.min.js
   sudo: false
