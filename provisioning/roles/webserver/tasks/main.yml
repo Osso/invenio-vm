@@ -57,10 +57,8 @@
   file: path={{invenio_prefix}}/lib/python/invenio owner=vagrant group=vagrant state=directory
 - name: Create invenio symlinks
   file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/local/lib/python2.7/site-packages/invenio state=link
-  sudo: true
 - name: Create invenio symlinks
   file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib/python2.7/dist-packages/invenio state=link
-  sudo: true
 - name: Install invenio
   command: chdir={{invenio_srcdir}} make install creates={{invenio_prefix}}/lib/python/invenio/search_engine.py
   sudo: false
