@@ -1,4 +1,0 @@
-- name: Reinstall broken perl packages
-  command: perl-cleaner --modules
-- name: Update eix
-  command: eix-update

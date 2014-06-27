@@ -1,6 +1,0 @@
-net-misc/openssh tcpd hpn libedit
-dev-lang/python readline ssl sqlite
-dev-libs/glib fam
-dev-vcs/git curl
-net-misc/rsync -acl
-sys-kernel/gentoo-sources -symlink

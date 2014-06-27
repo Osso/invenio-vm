@@ -1,12 +1,25 @@
-- name: Install portage/package.use/webserver
-  copy: src=webserver.use dest=/etc/portage/package.use/webserver
-
 - name: Install pip
-  portage: package=dev-python/pip state=present
+  apt: name=python-pip state=present
 - name: Install redis
-  portage: package=dev-db/redis state=present
+  apt: name=redis-server state=present
+- name: Install python dev headers
+  apt: name=python-dev
+- name: Install ssl dev headers
+  apt: name=libssl-dev
+- name: Install libxml2 headers
+  apt: name=libxml2-dev
+- name: Install libxslt headers
+  apt: name=libxslt-dev
+- name: Install gnuplot
+  apt: name=gnuplot
+- name: Install clisp
+  apt: name=clisp
+- name: Install automake
+  apt: name=automake
 - name: Install pstotext
-  portage: package=app-text/pstotext state=present
+  apt: name=pstotext
+- name: Install gettext
+  apt: name=gettext
 
 # Install packages
 - name: Install pypi requirements
@@ -18,7 +31,7 @@
 - name: Install nose tests
   pip: name=nose state=present
 - name: Start/Enable redis
-  service: name=redis enabled=yes state=started
+  service: name=redis-server enabled=yes state=started
 
 - name: Remove installed invenio
   file: path={{invenio_prefix}} state=absent
@@ -42,8 +55,9 @@
 - name: Create invenio lib dir
   file: path={{invenio_prefix}}/lib/python/invenio owner=vagrant group=vagrant state=directory
 - name: Create invenio symlinks
-  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib64/python2.7/site-packages/invenio state=link
-  sudo: true
+  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/local/lib/python2.7/site-packages/invenio state=link
+- name: Create invenio symlinks
+  file: src={{invenio_prefix}}/lib/python/invenio dest=/usr/lib/python2.7/dist-packages/invenio state=link
 - name: Install invenio
   command: chdir={{invenio_srcdir}} make install creates={{invenio_prefix}}/lib/python/invenio/search_engine.py
   sudo: false

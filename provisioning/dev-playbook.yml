@@ -8,7 +8,7 @@
     db_reinstall: false
 
   roles:
-    - gentoo
+    - debian
     - database
     - webserver
 
