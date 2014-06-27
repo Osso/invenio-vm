@@ -5,7 +5,7 @@
   portage: package=dev-python/pip state=present
 - name: Install redis
   portage: package=dev-db/redis state=present
-- name: Install redis
+- name: Install pstotext
   portage: package=app-text/pstotext state=present
 
 # Install packages

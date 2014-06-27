@@ -5,7 +5,7 @@
     invenio_srcdir: /home/invenio/invenio
     bibtask_user: admin
     files_reinstall: false
-    db_reinstall: true
+    db_reinstall: false
 
   roles:
     - gentoo
