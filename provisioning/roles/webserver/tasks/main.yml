@@ -20,6 +20,12 @@
   apt: name=pstotext
 - name: Install gettext
   apt: name=gettext
+- name: Install mysql client
+  apt: name=libmariadbclient-dev
+- name: Install cython
+  apt: name=cython
+- name: Install libhdf5
+  apt: name=libhdf5-dev
 
 # Install packages
 - name: Install pypi requirements

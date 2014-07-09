@@ -1,5 +1,0 @@
-dev-libs/libpcre unicode
-#dev-libs/boost icu
-net-misc/rsync -acl
-dev-db/mariadb libevent pbxt
-dev-db/mysql pbxt
